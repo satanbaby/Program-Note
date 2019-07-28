@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+  .hide{display: none;}
+  </style>
+  <!-- The core Firebase JS SDK is always required and must be listed first -->
+  <script src="https://www.gstatic.com/firebasejs/6.3.1/firebase-app.js"></script>
+
+  <!-- TODO: Add SDKs for Firebase products that you want to use
+  https://firebase.google.com/docs/web/setup#config-web-app -->
+  
+  <script src="https://www.gstatic.com/firebasejs/6.3.1/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/5.10.1/firebase-auth.js"></script>
+
+</head>
+<body>
+  <h1>登入</h1>
+  <form>
+    帳號<input type="email" id="email"><br>
+    密碼<input type="password" id="pwd" minlength="6"><br>
+    <input type="submit" value="登入" id="login">
+    <input type="submit" value="註冊" id="signUp">
+    <input type="submit" value="登出" id="logOut" class="hide">
+  </form>
+  <script>
+  // 參考文件 https://firebase.google.com/docs/auth/web/password-auth?authuser=0
+    // Your web app's Firebase configuration
+    var firebaseConfig = {...};
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    
+    // 引入服務
+    // const database = firebase.database();
+    const auth = firebase.auth();
+
+    const signUp = document.getElementById('signUp');
+    const login = document.getElementById('login');
+    const logOut = document.getElementById('logOut');
+
+    const email = document.getElementById('email');
+    const password = document.getElementById('pwd');
+    
+    //登入事件
+    login.addEventListener('click', (event)=>{
+        auth.signInWithEmailAndPassword(email.value, password.value)
+        .then(response=>{
+          console.log(response)
+        })
+        .catch(function(error) {
+        // Handle Errors here.
+      });
+      event.preventDefault();
+    })
+
+    // 註冊事件
+    signUp.addEventListener('click', (event)=>{
+      auth.createUserWithEmailAndPassword(email.value, password.value)
+      .then(response=>{
+        console.log('註冊成功')
+      })
+      .catch(function(error) {
+        // Handle Errors here.
+      });
+
+      event.preventDefault();
+    })
+
+    // 登出事件
+    logOut.addEventListener('click', (event)=>{
+      auth.signOut().then(function() {
+        console.log('登出成功')
+        logOut.classList.add('hide')
+      }).catch(function(error) {
+        // An error happened.
+        console.log(error)
+      });
+      event.preventDefault();
+    })
+
+    // 監聽登入狀態，不放在登入function處理是因為若已經登入，重新整理時登入狀態依舊，但卻沒有登出鈕
+    auth.onAuthStateChanged(userInfo=>{
+      console.log('userInfo', userInfo)
+      if(userInfo){
+        logOut.classList.remove('hide')
+      }
+    })
+    console.log(auth)
+  </script>
+</body>
+</html>
