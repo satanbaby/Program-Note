@@ -26,6 +26,7 @@
     <input type="submit" value="登入" id="login">
     <input type="submit" value="註冊" id="signUp">
     <input type="submit" value="登出" id="logOut" class="hide">
+    <input type="submit" value="用FB登入" id="fbLogin">
   </form>
   <script>
   // 參考文件 https://firebase.google.com/docs/auth/web/password-auth?authuser=0
@@ -37,13 +38,38 @@
     // 引入服務
     // const database = firebase.database();
     const auth = firebase.auth();
+    // 引入提供者
+    const provider = new firebase.auth.FacebookAuthProvider();
+    // 部分功能需經 facebook 審核
+    // provider.addScope('user_birthday');
+    // provider.addScope('user_posts');
 
     const signUp = document.getElementById('signUp');
     const login = document.getElementById('login');
     const logOut = document.getElementById('logOut');
+    const fbLogin = document.getElementById('fbLogin')
 
     const email = document.getElementById('email');
     const password = document.getElementById('pwd');
+
+    // facebook 登入事件，參考文件 https://firebase.google.com/docs/auth/web/facebook-login
+    fbLogin.addEventListener('click', (event)=>{
+      alert('即將登入Facebook')
+      // 重新導向頁面
+      auth.signInWithRedirect(provider);
+  
+      auth.getRedirectResult().then(function(result) {
+        if (result.credential) {
+          // This gives you a Facebook Access Token. You can use it to access the Facebook API.
+          var token = result.credential.accessToken;
+        }
+        // The signed-in user info.
+        var user = result.user;
+      }).catch(function(error) {
+        console.error(error)
+      });
+      event.preventDefault()
+    })
     
     //登入事件
     login.addEventListener('click', (event)=>{
