@@ -29,3 +29,28 @@ public static IEnumerable<T> Get_API<T>(object model, string url)
         }
     }
 }
+
+private class TrimmingConverter : JsonConverter
+{
+    public override bool CanRead => true;
+    public override bool CanWrite => false;
+
+    public override bool CanConvert(Type objectType) => objectType == typeof(string);
+
+    public override object ReadJson(JsonReader reader, Type objectType,
+                                    object existingValue, JsonSerializer serializer)
+    {
+        if (reader.ValueType == typeof(string))
+        {
+            return ((string)reader.Value)?.Trim();
+        }
+
+        return reader.Value?.ToString();
+    }
+
+    public override void WriteJson(JsonWriter writer, object value,
+                                   JsonSerializer serializer)
+    {
+        throw new NotImplementedException();
+    }
+}
